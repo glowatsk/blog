@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "https://blog.glowatski.com"
+base_url = "https://www.glowatsk.com"
 name = "bebop-blog"
 description = "A blog about stuff I write about"
 
