@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <title>
+         Streaming data in rust
+        
+    </title>
+    
+
+    
+         <link rel="icon" type="image/png" href=&#x2F;images&#x2F;128.png />
+    
+
+    
+
+    
+
+    
+
+    
+    
+        <script src=https://www.glowatsk.com/js/feather.min.js></script>
+    
+
+
+    
+        <link href=https://www.glowatsk.com/css/fonts.css rel="stylesheet" />
+    
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://www.glowatsk.com/css/main.css />
+
+    
+        <link
+            rel="stylesheet"
+            id="darkModeStyle"
+            type="text/css"
+            href=https://www.glowatsk.com/css/dark.css
+            
+                media="(prefers-color-scheme: dark)"
+            
+            
+        />
+    
+
+
+    
+
+
+</head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main" id="main_title">
+        <a href=https:&#x2F;&#x2F;www.glowatsk.com></a>
+    </div>
+
+    <nav>
+        
+            <a href=&#x2F;>Home</a>
+        
+            <a href=&#x2F;posts>Posts</a>
+        
+            <a href=&#x2F;about>About</a>
+        
+            <a href=&#x2F;tags>Tags</a>
+        
+
+        
+            |
+
+            
+                <a href=&#x2F;>en</a>
+            
+        
+
+        
+    </nav>
+</header>
+
+
+        
+    
+<main>
+    <article>
+        <div class="title">
+            <h1 class="title">Streaming data in rust</h1>
+            <div class="meta">
+                
+                on  2022-02-09
+
+                
+            </div>
+        </div>
+
+        
+
+        <section class="body">
+            <p>I wanted to attempt doing some programming puzzles  to get more comfortable with rust. I had watched a <a href="https://www.youtube.com/watch?v=bkvSRfgDG-E">great video</a>  of the solution in January.I was thinking as I was watching the video to solve the solution with more of a streaming oriented answer. I had been letting this percolate for a while until I was ambitious enough to try implementing the solution.</p>
+<p>Input: Find the elf carrying the largest amount of calories. Where this is determined by the summing of values to the next empty line</p>
+<pre style="background-color:#282c34;color:#dcdfe4;"><code><span>4035
+</span><span>10596
+</span><span>17891
+</span><span>5278
+</span><span>
+</span><span>11293
+</span><span>8478
+</span><span>10874
+</span><span>10582
+</span><span>10756
+</span><span>6649
+</span><span>
+</span></code></pre>
+<p>I had the general steps on what I needed to do to accomplish this:</p>
+<ol>
+<li>Read the input file</li>
+<li>Parse each byte in the file and check for the newline character</li>
+<li>Group the items then parse them into an int</li>
+<li>Sum the container of ints when we hit an empty line and add this to another container.</li>
+<li>Find the largest value in the container for our answer</li>
+</ol>
+<p>Read the file</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#c678dd;">let mut</span><span> file </span><span style="color:#c678dd;">= match </span><span>File::open(filename) {
+</span><span>    Ok(file) </span><span style="color:#c678dd;">=&gt;</span><span> file,
+</span><span>    Err(error) </span><span style="color:#c678dd;">=&gt; </span><span>{
+</span><span>        println!(</span><span style="color:#98c379;">&quot;Error opening file: </span><span style="color:#e5c07b;">{}</span><span style="color:#98c379;">&quot;</span><span>, error);
+</span><span>        </span><span style="color:#c678dd;">return</span><span>;
+</span><span>    }
+</span><span>};
+</span></code></pre>
+<p>Parse each byte</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#c678dd;">match</span><span> file.</span><span style="color:#61afef;">read</span><span>(</span><span style="color:#c678dd;">&amp;mut</span><span> buffer) {
+</span><span>    Ok(</span><span style="color:#e5c07b;">0</span><span>) </span><span style="color:#c678dd;">=&gt; break</span><span>,
+</span><span>    Ok(</span><span style="color:#e5c07b;">1</span><span>) </span><span style="color:#c678dd;">=&gt; </span><span>{}
+</span></code></pre>
+<p>Group the items and parse into an int</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#c678dd;">let</span><span> line_str </span><span style="color:#c678dd;">= str</span><span>::from_utf8(</span><span style="color:#c678dd;">&amp;</span><span>line).</span><span style="color:#61afef;">unwrap</span><span>();
+</span><span style="color:#c678dd;">let</span><span> number </span><span style="color:#c678dd;">=</span><span> line_str.</span><span style="color:#61afef;">trim</span><span>().parse::&lt;</span><span style="color:#c678dd;">i32</span><span>&gt;().</span><span style="color:#61afef;">unwrap</span><span>();
+</span><span>numbers.</span><span style="color:#61afef;">push</span><span>(number);
+</span><span>line.</span><span style="color:#61afef;">clear</span><span>()
+</span></code></pre>
+<p>Sum the container of ints when we encounter an empty line.</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#c678dd;">if</span><span> line.</span><span style="color:#61afef;">is_empty</span><span>() {
+</span><span>    </span><span style="color:#c678dd;">let</span><span> total: </span><span style="color:#c678dd;">i32 =</span><span> numbers.</span><span style="color:#61afef;">iter</span><span>().</span><span style="color:#61afef;">sum</span><span>();
+</span><span>    totals.</span><span style="color:#61afef;">push</span><span>(total);
+</span><span>    numbers.</span><span style="color:#61afef;">clear</span><span>()
+</span></code></pre>
+<p>Max value of an interable.</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span>println!(</span><span style="color:#98c379;">&quot;</span><span style="color:#e5c07b;">{:?}</span><span style="color:#98c379;">&quot;</span><span>, totals.</span><span style="color:#61afef;">iter</span><span>().</span><span style="color:#61afef;">max</span><span>())
+</span></code></pre>
+<p>I would be curious to know if its better to split a file first then parse and sum it, versus the streaming method. However, we have been talking about stream processing data at work and thought it would be good practice to at least see how to put it together in theory.</p>
+<p>Next step is to hopefully do something like this with some JSON input. I think that should be a little bit more challenging. Time to take a look at how these items are serialized. I know <a href="https://github.com/serde-rs/json">serde</a> is supposed to be one of the best serialization projects, not only in rust, but accross all languages. I will have to take a read how they handle everything.</p>
+<p>Full code</p>
+<pre data-lang="rust" style="background-color:#282c34;color:#dcdfe4;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#c678dd;">use </span><span>std::fs::File;
+</span><span style="color:#c678dd;">use </span><span>std::io::prelude::</span><span style="color:#c678dd;">*</span><span>;
+</span><span style="color:#c678dd;">use </span><span>std::str;
+</span><span>
+</span><span style="color:#c678dd;">fn </span><span style="color:#61afef;">main</span><span>() {
+</span><span>    </span><span style="color:#c678dd;">let</span><span> filename </span><span style="color:#c678dd;">= </span><span style="color:#98c379;">&quot;input.txt&quot;</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#c678dd;">let mut</span><span> file </span><span style="color:#c678dd;">= match </span><span>File::open(filename) {
+</span><span>        Ok(file) </span><span style="color:#c678dd;">=&gt;</span><span> file,
+</span><span>        Err(error) </span><span style="color:#c678dd;">=&gt; </span><span>{
+</span><span>            println!(</span><span style="color:#98c379;">&quot;Error opening file: </span><span style="color:#e5c07b;">{}</span><span style="color:#98c379;">&quot;</span><span>, error);
+</span><span>            </span><span style="color:#c678dd;">return</span><span>;
+</span><span>        }
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#c678dd;">let mut</span><span> buffer </span><span style="color:#c678dd;">= </span><span>[</span><span style="color:#e5c07b;">0</span><span>; </span><span style="color:#e5c07b;">1</span><span>];
+</span><span>    </span><span style="color:#c678dd;">let mut</span><span> line </span><span style="color:#c678dd;">= </span><span>Vec::new();
+</span><span>    </span><span style="color:#c678dd;">let mut</span><span> numbers </span><span style="color:#c678dd;">= </span><span>Vec::new();
+</span><span>    </span><span style="color:#c678dd;">let mut</span><span> totals </span><span style="color:#c678dd;">= </span><span>Vec::new();
+</span><span>
+</span><span>    </span><span style="color:#c678dd;">loop </span><span>{
+</span><span>        </span><span style="color:#c678dd;">match</span><span> file.</span><span style="color:#61afef;">read</span><span>(</span><span style="color:#c678dd;">&amp;mut</span><span> buffer) {
+</span><span>            Ok(</span><span style="color:#e5c07b;">0</span><span>) </span><span style="color:#c678dd;">=&gt; break</span><span>,
+</span><span>            Ok(</span><span style="color:#e5c07b;">1</span><span>) </span><span style="color:#c678dd;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#c678dd;">if</span><span> buffer[</span><span style="color:#e5c07b;">0</span><span>] </span><span style="color:#c678dd;">== b</span><span style="color:#98c379;">&#39;</span><span style="color:#56b6c2;">\n</span><span style="color:#98c379;">&#39; </span><span>{
+</span><span>                    </span><span style="color:#c678dd;">if</span><span> line.</span><span style="color:#61afef;">is_empty</span><span>() {
+</span><span>                        </span><span style="color:#c678dd;">let</span><span> total: </span><span style="color:#c678dd;">i32 =</span><span> numbers.</span><span style="color:#61afef;">iter</span><span>().</span><span style="color:#61afef;">sum</span><span>();
+</span><span>                        totals.</span><span style="color:#61afef;">push</span><span>(total);
+</span><span>                        numbers.</span><span style="color:#61afef;">clear</span><span>()
+</span><span>                    } </span><span style="color:#c678dd;">else </span><span>{
+</span><span>                        </span><span style="color:#c678dd;">let</span><span> line_str </span><span style="color:#c678dd;">= str</span><span>::from_utf8(</span><span style="color:#c678dd;">&amp;</span><span>line).</span><span style="color:#61afef;">unwrap</span><span>();
+</span><span>                        </span><span style="color:#c678dd;">let</span><span> number </span><span style="color:#c678dd;">=</span><span> line_str.</span><span style="color:#61afef;">trim</span><span>().parse::&lt;</span><span style="color:#c678dd;">i32</span><span>&gt;().</span><span style="color:#61afef;">unwrap</span><span>();
+</span><span>                        numbers.</span><span style="color:#61afef;">push</span><span>(number);
+</span><span>                        line.</span><span style="color:#61afef;">clear</span><span>()
+</span><span>                    }
+</span><span>                } </span><span style="color:#c678dd;">else </span><span>{
+</span><span>                    line.</span><span style="color:#61afef;">push</span><span>(buffer[</span><span style="color:#e5c07b;">0</span><span>]);
+</span><span>                }
+</span><span>            }
+</span><span>            </span><span style="color:#c678dd;">_ =&gt; </span><span>panic!(</span><span style="color:#98c379;">&quot;Unexpected number of bytes read&quot;</span><span>),
+</span><span>        }
+</span><span>    }
+</span><span>    println!(</span><span style="color:#98c379;">&quot;</span><span style="color:#e5c07b;">{:?}</span><span style="color:#98c379;">&quot;</span><span>, totals.</span><span style="color:#61afef;">iter</span><span>().</span><span style="color:#61afef;">max</span><span>())
+</span><span>}
+</span></code></pre>
+
+        </section>
+
+        
+            <div class="post-tags">
+                <nav class="nav tags">
+                    <ul class="tags">
+                        
+                            <li><a href=https://www.glowatsk.com/tags/rust/>rust</a></li>
+                        
+                    </ul>
+                </nav>
+            </div>
+        
+
+    </article>
+</main>
+
+
+
+        <footer>
+  <div style="display:flex">
+    
+        <a class="soc" href=https:&#x2F;&#x2F;github.com&#x2F;glowatsk title=GitHub>
+            <i data-feather=github></i>
+        </a>
+    
+  </div>
+  <div class="footer-info">
+    2023 © Brandon Glowatski | <a
+      href="https://github.com/XXXMrG/archie-zola">Archie-Zola Theme</a>
+  </div>
+</footer>
+
+
+<script>
+    feather.replace();
+</script>
+
+
+    </div>
+</body>
+
+</html>
